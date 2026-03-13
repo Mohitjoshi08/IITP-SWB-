@@ -1,6 +1,9 @@
 import { getSheetData } from '../../lib/google-sheets';
 import { Clock } from 'lucide-react';
 
+// This is the magic line! It forces the app to fetch fresh live data every time.
+export const dynamic = 'force-dynamic';
+
 export default async function TrainsPage() {
   const rows = await getSheetData('Trains!A2:E'); 
 
