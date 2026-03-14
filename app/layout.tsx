@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navigation from "../components/Navigation";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 export const metadata: Metadata = {
   title: "IITP Hub | Campus App",
@@ -25,9 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <LoadingOverlay />
         {children}
-
-        
         <Navigation />
       </body>
     </html>
