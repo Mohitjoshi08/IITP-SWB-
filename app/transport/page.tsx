@@ -1,26 +1,24 @@
 import { getSheetData } from '../../lib/google-sheets';
-import { Car, MapPin, Phone, User, Banknote } from 'lucide-react';
+import { Phone, MapPin, Car } from 'lucide-react';
 
-// This line forces Vercel to fetch fresh data every time!
 export const dynamic = 'force-dynamic';
 
 export default async function TransportPage() {
-  // Fetch data from the "Cabs" tab, columns A to E, starting from Row 2
   const rows = await getSheetData('Cabs!A2:E'); 
 
   return (
-    <div className="min-h-screen p-6 md:p-12 max-w-3xl mx-auto pb-32">
-      <header className="mb-10 mt-4 md:mt-0">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Campus Transport</h1>
-        <p className="text-text-secondary">Quickly contact reliable drivers for your commute.</p>
+    <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-white">Campus Cabs</h1>
+        <p className="text-sm text-text-secondary mt-1">Quick contacts for your commute.</p>
       </header>
 
       {(!rows || rows.length === 0) ? (
-        <div className="bg-surface/50 border border-border-subtle p-8 rounded-3xl text-center">
-          <p className="text-text-secondary">No drivers listed right now. Please add them to the Google Sheet.</p>
+        <div className="bg-surface border border-border-subtle p-6 rounded-2xl text-center">
+          <p className="text-sm text-text-secondary">No drivers listed right now.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="flex flex-col gap-3">
           {rows.map((ride, index) => {
             const type = ride[0] || "Vehicle";
             const driverName = ride[1] || "Unknown Driver";
@@ -29,38 +27,33 @@ export default async function TransportPage() {
             const route = ride[4] || "Campus & Around";
 
             return (
-              <div key={index} className="group bg-surface border border-border-subtle p-6 rounded-3xl hover:border-accent/50 transition-all duration-300 shadow-lg relative overflow-hidden">
-                <div className="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <Car size={120} />
-                </div>
-                <div className="flex flex-col md:flex-row justify-between gap-4 relative z-10">
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-2">
-                      <div className="bg-accent/10 text-accent border border-accent/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                        {type}
+              <div key={index} className="bg-surface border border-border-subtle p-4 rounded-2xl flex flex-col gap-3 relative overflow-hidden">
+                <div className="flex justify-between items-start">
+                  <div className="flex gap-3 items-center">
+                    <div className="w-10 h-10 bg-surface-hover rounded-xl flex items-center justify-center border border-border-subtle shrink-0">
+                      <Car className="text-text-secondary" size={18} />
+                    </div>
+                    <div>
+                      <h2 className="text-[15px] font-semibold text-white leading-tight">{driverName}</h2>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] font-bold tracking-wider text-accent bg-accent/10 px-1.5 py-0.5 rounded uppercase">
+                          {type}
+                        </span>
+                        <span className="text-[12px] font-medium text-green-400">{fare}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <User size={20} className="text-text-secondary" />
-                      <h2 className="text-xl font-semibold text-white tracking-tight">{driverName}</h2>
-                    </div>
-                    <div className="flex items-center gap-2 text-text-secondary text-sm font-medium">
-                      <MapPin size={16} className="text-accent" />
-                      {route}
-                    </div>
                   </div>
-                  <div className="flex flex-col justify-between items-start md:items-end gap-4 border-t border-border-subtle pt-4 md:border-t-0 md:pt-0">
-                    <div className="flex items-center gap-2 bg-surface-hover px-4 py-2 rounded-xl border border-border-subtle">
-                      <Banknote size={18} className="text-green-400" />
-                      <span className="text-sm font-bold text-white">{fare}</span>
-                    </div>
-                    {phone && (
-                      <a href={`tel:${phone}`} className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-xl font-bold hover:bg-gray-200 transition-colors w-full md:w-auto justify-center shadow-md">
-                        <Phone size={18} />
-                        Call Driver
-                      </a>
-                    )}
-                  </div>
+                  
+                  {phone && (
+                    <a href={`tel:${phone}`} className="bg-white text-black p-2.5 rounded-xl hover:bg-gray-200 transition-colors active:scale-95 shrink-0">
+                      <Phone size={16} className="fill-black" />
+                    </a>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 text-text-secondary text-[12px] font-medium bg-surface-hover/50 px-3 py-2 rounded-lg">
+                  <MapPin size={12} className="text-accent shrink-0" />
+                  <span className="truncate">{route}</span>
                 </div>
               </div>
             );

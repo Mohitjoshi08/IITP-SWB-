@@ -11,7 +11,6 @@ export default function ComplaintsPage() {
   const [loadingIssues, setLoadingIssues] = useState(false);
   const [deviceId, setDeviceId] = useState<string>('');
 
-  // Generate a secret Device ID the first time they open the app
   useEffect(() => {
     let id = localStorage.getItem('iitp_device_id');
     if (!id) {
@@ -21,7 +20,6 @@ export default function ComplaintsPage() {
     setDeviceId(id);
   }, []);
 
-  // Fetch ONLY this user's complaints when the Track tab is clicked
   useEffect(() => {
     if (activeTab === 'track' && deviceId) {
       setLoadingIssues(true);
@@ -46,94 +44,93 @@ export default function ComplaintsPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-12 max-w-2xl mx-auto pb-32">
-      <header className="mb-8 mt-4 md:mt-0 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
+      <header className="mb-6 flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Issue Tracker</h1>
-          <p className="text-text-secondary">Report issues or track their resolution status.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Reports</h1>
+          <p className="text-sm text-text-secondary mt-1">Issues & tracking</p>
         </div>
-        {/* Privacy Badge */}
-        <div className="flex items-center gap-2 bg-surface-hover border border-border-subtle px-3 py-1.5 rounded-lg w-fit">
-          <ShieldCheck size={16} className="text-green-400" />
-          <span className="text-xs font-medium text-text-secondary">Private & Secure</span>
+        <div className="flex items-center gap-1.5 bg-surface-hover border border-border-subtle px-2 py-1 rounded-lg">
+          <ShieldCheck size={12} className="text-green-400" />
+          <span className="text-[10px] font-medium text-text-secondary uppercase tracking-wide">Private</span>
         </div>
       </header>
 
       {/* TABS */}
-      <div className="flex bg-surface-hover p-1 rounded-xl mb-8 border border-border-subtle">
-        <button onClick={() => setActiveTab('submit')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'submit' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}>
-          File an Issue
+      <div className="flex bg-surface-hover p-1 rounded-xl mb-6 border border-border-subtle">
+        <button onClick={() => setActiveTab('submit')} className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${activeTab === 'submit' ? 'bg-surface border border-border-subtle shadow-sm text-white' : 'text-text-secondary'}`}>
+          File Issue
         </button>
-        <button onClick={() => setActiveTab('track')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'track' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}>
-          My Complaints
+        <button onClick={() => setActiveTab('track')} className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${activeTab === 'track' ? 'bg-surface border border-border-subtle shadow-sm text-white' : 'text-text-secondary'}`}>
+          My Reports
         </button>
       </div>
 
-      {/* TAB CONTENT: SUBMIT */}
+      {/* CONTENT: SUBMIT */}
       {activeTab === 'submit' && (
         status === 'success' ? (
-          <div className="bg-surface border border-emerald-500/30 p-8 rounded-3xl text-center shadow-[0_0_30px_rgba(16,185,129,0.15)] animate-in fade-in duration-300">
-            <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 size={40} className="text-emerald-500" />
+          <div className="bg-surface border border-emerald-500/30 p-6 rounded-2xl text-center shadow-lg animate-in fade-in zoom-in duration-300">
+            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={32} className="text-emerald-500" />
             </div>
-            <h2 className="text-2xl font-semibold text-white mb-2">Complaint Registered</h2>
-            <p className="text-text-secondary mb-8">Your issue has been recorded privately.</p>
-            <button onClick={() => setStatus('idle')} className="bg-surface-hover text-white px-8 py-3 rounded-xl font-bold border border-border-subtle hover:bg-border-subtle transition-colors">
-              Submit Another Issue
+            <h2 className="text-[18px] font-semibold text-white mb-1">Issue Reported</h2>
+            <p className="text-[13px] text-text-secondary mb-6">Your report was saved privately.</p>
+            <button onClick={() => setStatus('idle')} className="bg-surface-hover text-white w-full py-2.5 rounded-xl text-[14px] font-semibold border border-border-subtle active:scale-[0.98] transition-transform">
+              Submit Another
             </button>
           </div>
         ) : (
-          <form action={handleSubmit} className="bg-surface border border-border-subtle p-6 md:p-8 rounded-3xl shadow-lg flex flex-col gap-6 animate-in fade-in duration-300">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text-secondary">Issue Title</label>
-              <input required name="title" type="text" placeholder="e.g. Fan not working in Room 214" className="bg-bg-main border border-border-subtle rounded-xl p-3.5 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+          <form action={handleSubmit} className="bg-surface border border-border-subtle p-5 rounded-2xl flex flex-col gap-4 shadow-sm animate-in fade-in duration-300">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[12px] font-medium text-text-secondary ml-1">Issue Title</label>
+              <input required name="title" type="text" placeholder="e.g. Fan not working" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text-secondary">Description</label>
-              <textarea required name="description" rows={4} placeholder="Please provide detailed information about the problem..." className="bg-bg-main border border-border-subtle rounded-xl p-3.5 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all resize-none"></textarea>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[12px] font-medium text-text-secondary ml-1">Description</label>
+              <textarea required name="description" rows={3} placeholder="Details about the problem..." className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors resize-none"></textarea>
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text-secondary">Image URL <span className="text-text-secondary/50 font-normal">(Optional)</span></label>
-              <input name="imageUrl" type="url" placeholder="Paste a link to an image (Google Drive, Imgur, etc.)" className="bg-bg-main border border-border-subtle rounded-xl p-3.5 text-white focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[12px] font-medium text-text-secondary ml-1">Image URL <span className="opacity-50">(Optional)</span></label>
+              <input name="imageUrl" type="url" placeholder="Link to image" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
             </div>
-            <button disabled={status === 'loading'} type="submit" className="bg-white text-black font-bold text-lg rounded-xl p-4 flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors mt-2 disabled:opacity-70 disabled:cursor-not-allowed">
-              {status === 'loading' ? <><Loader2 className="animate-spin" size={20} /> Submitting...</> : <><Send size={20} /> Submit Complaint</>}
+            <button disabled={status === 'loading'} type="submit" className="bg-white text-black font-bold text-[15px] rounded-xl p-3 flex items-center justify-center gap-2 hover:bg-gray-200 active:scale-[0.98] transition-all mt-2 disabled:opacity-70">
+              {status === 'loading' ? <><Loader2 className="animate-spin" size={18} /> Sending...</> : <><Send size={18} /> Submit Report</>}
             </button>
           </form>
         )
       )}
 
-      {/* TAB CONTENT: TRACK */}
+      {/* CONTENT: TRACK */}
       {activeTab === 'track' && (
-        <div className="flex flex-col gap-4 animate-in fade-in duration-300">
+        <div className="flex flex-col gap-3 animate-in fade-in duration-300">
           {loadingIssues ? (
-            <div className="flex items-center justify-center p-12 text-text-secondary">
-              <Loader2 className="animate-spin" size={32} />
+            <div className="flex justify-center p-10 text-text-secondary">
+              <Loader2 className="animate-spin" size={24} />
             </div>
           ) : pastIssues.length === 0 ? (
-            <div className="bg-surface/50 border border-border-subtle p-8 rounded-3xl text-center">
-              <p className="text-text-secondary">You haven't submitted any complaints from this device yet.</p>
+            <div className="bg-surface border border-border-subtle p-6 rounded-2xl text-center">
+              <p className="text-[13px] text-text-secondary">No reports found from this device.</p>
             </div>
           ) : (
             pastIssues.map((issue, index) => {
               const timestamp = issue[0] || "Unknown Date";
-              const title = issue[1] || "Untitled Issue";
-              const description = issue[2] || "No description provided.";
+              const title = issue[1] || "Untitled";
+              const description = issue[2] || "No description.";
               const currentStatus = issue[4] || "Pending";
 
               return (
-                <div key={index} className="bg-surface border border-border-subtle p-5 rounded-2xl shadow-md flex flex-col gap-3">
-                  <div className="flex justify-between items-start gap-4">
-                    <h3 className="font-semibold text-white text-lg leading-tight">{title}</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap border ${getStatusStyle(currentStatus)}`}>
+                <div key={index} className="bg-surface border border-border-subtle p-4 rounded-2xl shadow-sm flex flex-col gap-2">
+                  <div className="flex justify-between items-start gap-3">
+                    <h3 className="font-semibold text-white text-[15px] leading-tight">{title}</h3>
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${getStatusStyle(currentStatus)} shrink-0`}>
                       {currentStatus}
                     </span>
                   </div>
-                  <p className="text-text-secondary text-sm leading-relaxed line-clamp-2">
+                  <p className="text-text-secondary text-[13px] leading-relaxed line-clamp-2">
                     {description}
                   </p>
-                  <div className="flex items-center gap-2 mt-2 pt-3 border-t border-border-subtle text-xs text-text-secondary font-medium">
-                    <Clock size={14} />
+                  <div className="flex items-center gap-1.5 mt-1 pt-2 border-t border-border-subtle/50 text-[11px] text-text-secondary font-medium">
+                    <Clock size={12} />
                     {timestamp}
                   </div>
                 </div>
