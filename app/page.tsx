@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import PageLoader from '../components/PageLoader';
+
 
 export default function ShopsPage() {
   const [shops, setShops] = useState<any[]>([]);
@@ -20,7 +20,7 @@ export default function ShopsPage() {
 
   return (
     <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
-      {loading && <PageLoader />}
+      {loading }
 
       <header className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-white">Campus Live</h1>
