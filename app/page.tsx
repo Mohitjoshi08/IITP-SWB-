@@ -1,37 +1,58 @@
-import { Train, Utensils } from 'lucide-react';
-import Link from 'next/link';
+import { Store } from 'lucide-react';
+import { getSheetData } from '../lib/google-sheets';
 
-export default function Home() {
+// This tells Next.js to always fetch fresh data when someone opens the app
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  // Fetch data from the "Shops" tab in your Google Sheet
+  const rows = await getSheetData('Shops!A2:C'); 
+
   return (
-    <div className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto">
-      <header className="mb-12 mt-4 md:mt-0">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Welcome to IITP.</h1>
-        <p className="text-text-secondary text-lg">Your campus life, simplified.</p>
+    <div className="min-h-screen p-6 md:p-12 max-w-4xl mx-auto pb-32">
+      <header className="mb-10 mt-4 md:mt-0">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Campus Live</h1>
+        <p className="text-text-secondary text-lg">Real-time status of shops and eateries.</p>
       </header>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Link href="/mess" className="group relative overflow-hidden bg-surface border border-border-subtle p-6 rounded-3xl hover:border-accent/50 transition-all duration-300 shadow-lg">
-          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Utensils size={80} />
-          </div>
-          <div className="bg-accent/10 w-12 h-12 rounded-full flex items-center justify-center mb-6">
-            <Utensils className="text-accent" size={24} />
-          </div>
-          <h2 className="text-2xl font-semibold mb-1">Mess Menu</h2>
-          <p className="text-text-secondary">Check today's breakfast, lunch, and dinner.</p>
-        </Link>
+      {rows.length === 0 ? (
+        <div className="bg-surface/50 border border-border-subtle p-8 rounded-3xl text-center">
+          <p className="text-text-secondary">No shops found. Please add them to your Google Sheet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {rows.map((shop, index) => {
+            const shopName = shop[0] || "Unknown Shop";
+            const category = shop[1] || "General";
+            const status = shop[2]?.toUpperCase() || "CLOSED";
+            
+            const isOpen = status === 'OPEN';
 
-        <Link href="/trains" className="group relative overflow-hidden bg-surface border border-border-subtle p-6 rounded-3xl hover:border-accent/50 transition-all duration-300 shadow-lg">
-          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Train size={80} />
-          </div>
-          <div className="bg-accent/10 w-12 h-12 rounded-full flex items-center justify-center mb-6">
-            <Train className="text-accent" size={24} />
-          </div>
-          <h2 className="text-2xl font-semibold mb-1">Train Schedule</h2>
-          <p className="text-text-secondary">Live timings from Bihta to Patna.</p>
-        </Link>
-      </div>
+            return (
+              <div key={index} className="group bg-surface border border-border-subtle p-6 rounded-3xl flex justify-between items-center hover:bg-surface-hover transition-all duration-300 shadow-lg">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isOpen ? 'bg-green-500/10' : 'bg-surface-hover'}`}>
+                    <Store className={isOpen ? 'text-green-500' : 'text-text-secondary'} size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-white tracking-tight">{shopName}</h2>
+                    <p className="text-sm text-text-secondary">{category}</p>
+                  </div>
+                </div>
+
+                {/* Status Badge */}
+                <div className={`px-4 py-1.5 rounded-full text-sm font-bold tracking-wider border ${
+                  isOpen 
+                    ? 'bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.2)]' 
+                    : 'bg-red-500/5 text-red-500/70 border-red-500/10'
+                }`}>
+                  {status}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
