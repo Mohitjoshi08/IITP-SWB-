@@ -11,7 +11,6 @@ export default function Navigation() {
   const navItems = [
     { name: 'Shops', href: '/', icon: Store },
     { name: 'Mess', href: '/mess', icon: Utensils },
-    { name: 'Trains', href: '/trains', icon: Train },
     { name: 'Cabs', href: '/transport', icon: Car },
     { name: 'Reports', href: '/complaints', icon: AlertTriangle },
   ];
