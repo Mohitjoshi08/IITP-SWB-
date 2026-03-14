@@ -23,8 +23,11 @@ export default async function Home() {
         <p className="text-sm text-text-secondary mt-1">Real-time status of shops & eateries.</p>
       </header>
       {rows.length === 0 ? (
-        <div className="bg-surface border border-border-subtle p-6 rounded-2xl text-center">
-          <p className="text-sm text-text-secondary">No shops found.</p>
+        <div className="flex flex-col items-center justify-center py-16">
+          <span className="text-lg text-accent font-semibold mb-2">Fetching live data...</span>
+          <span className="text-sm text-accent font-bold bg-accent/10 px-4 py-1 rounded-full border border-accent/30 shadow mt-2">
+            Mohit for SWB
+          </span>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
