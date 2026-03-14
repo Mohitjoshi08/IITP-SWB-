@@ -2,32 +2,42 @@
 
 import { useState, useEffect } from 'react';
 import { submitComplaint, getComplaints } from './actions';
-import { CheckCircle2, Loader2, Send, Clock, Wrench } from 'lucide-react';
+import { CheckCircle2, Loader2, Send, Clock, ShieldCheck } from 'lucide-react';
 
 export default function ComplaintsPage() {
   const [activeTab, setActiveTab] = useState<'submit' | 'track'>('submit');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [pastIssues, setPastIssues] = useState<any[]>([]);
   const [loadingIssues, setLoadingIssues] = useState(false);
+  const [deviceId, setDeviceId] = useState<string>('');
 
-  // Fetch previous complaints when the "Track Status" tab is clicked
+  // Generate a secret Device ID the first time they open the app
   useEffect(() => {
-    if (activeTab === 'track') {
+    let id = localStorage.getItem('iitp_device_id');
+    if (!id) {
+      id = 'device_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('iitp_device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  // Fetch ONLY this user's complaints when the Track tab is clicked
+  useEffect(() => {
+    if (activeTab === 'track' && deviceId) {
       setLoadingIssues(true);
-      getComplaints().then((data) => {
+      getComplaints(deviceId).then((data) => {
         setPastIssues(data);
         setLoadingIssues(false);
       });
     }
-  }, [activeTab]);
+  }, [activeTab, deviceId]);
 
   async function handleSubmit(formData: FormData) {
     setStatus('loading');
-    await submitComplaint(formData);
+    await submitComplaint(formData, deviceId);
     setStatus('success');
   }
 
-  // Helper to color-code the status dynamically
   const getStatusStyle = (currentStatus: string) => {
     const s = currentStatus?.toLowerCase() || 'pending';
     if (s.includes('resolv') || s.includes('done')) return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
@@ -37,36 +47,37 @@ export default function ComplaintsPage() {
 
   return (
     <div className="min-h-screen p-6 md:p-12 max-w-2xl mx-auto pb-32">
-      <header className="mb-8 mt-4 md:mt-0">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Issue Tracker</h1>
-        <p className="text-text-secondary">Report issues or track their resolution status.</p>
+      <header className="mb-8 mt-4 md:mt-0 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Issue Tracker</h1>
+          <p className="text-text-secondary">Report issues or track their resolution status.</p>
+        </div>
+        {/* Privacy Badge */}
+        <div className="flex items-center gap-2 bg-surface-hover border border-border-subtle px-3 py-1.5 rounded-lg w-fit">
+          <ShieldCheck size={16} className="text-green-400" />
+          <span className="text-xs font-medium text-text-secondary">Private & Secure</span>
+        </div>
       </header>
 
       {/* TABS */}
       <div className="flex bg-surface-hover p-1 rounded-xl mb-8 border border-border-subtle">
-        <button 
-          onClick={() => setActiveTab('submit')} 
-          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'submit' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}
-        >
+        <button onClick={() => setActiveTab('submit')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'submit' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}>
           File an Issue
         </button>
-        <button 
-          onClick={() => setActiveTab('track')} 
-          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'track' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}
-        >
-          Track Status
+        <button onClick={() => setActiveTab('track')} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'track' ? 'bg-surface border border-border-subtle shadow-md text-white' : 'text-text-secondary hover:text-white'}`}>
+          My Complaints
         </button>
       </div>
 
       {/* TAB CONTENT: SUBMIT */}
       {activeTab === 'submit' && (
         status === 'success' ? (
-          <div className="bg-surface border border-emerald-500/30 p-8 rounded-3xl text-center shadow-[0_0_30px_rgba(16,185,129,0.15)] animate-in fade-in zoom-in duration-300">
+          <div className="bg-surface border border-emerald-500/30 p-8 rounded-3xl text-center shadow-[0_0_30px_rgba(16,185,129,0.15)] animate-in fade-in duration-300">
             <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 size={40} className="text-emerald-500" />
             </div>
             <h2 className="text-2xl font-semibold text-white mb-2">Complaint Registered</h2>
-            <p className="text-text-secondary mb-8">Your issue has been recorded successfully in the database.</p>
+            <p className="text-text-secondary mb-8">Your issue has been recorded privately.</p>
             <button onClick={() => setStatus('idle')} className="bg-surface-hover text-white px-8 py-3 rounded-xl font-bold border border-border-subtle hover:bg-border-subtle transition-colors">
               Submit Another Issue
             </button>
@@ -101,7 +112,7 @@ export default function ComplaintsPage() {
             </div>
           ) : pastIssues.length === 0 ? (
             <div className="bg-surface/50 border border-border-subtle p-8 rounded-3xl text-center">
-              <p className="text-text-secondary">No recent issues found in the database.</p>
+              <p className="text-text-secondary">You haven't submitted any complaints from this device yet.</p>
             </div>
           ) : (
             pastIssues.map((issue, index) => {
