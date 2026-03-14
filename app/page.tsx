@@ -4,7 +4,6 @@ import { getSheetData } from '../lib/google-sheets';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Now we only fetch columns A and B (Shop Name and Status)
   const rows = await getSheetData('Shops!A2:B'); 
 
   return (
@@ -22,9 +21,7 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {rows.map((shop, index) => {
             const shopName = shop[0] || "Unknown Shop";
-            // Status is now the second column (index 1)
             const status = shop[1]?.toUpperCase() || "CLOSED"; 
-            
             const isOpen = status === 'OPEN';
 
             return (
@@ -35,12 +32,8 @@ export default async function Home() {
                   </div>
                   <h2 className="text-xl font-semibold text-white tracking-tight">{shopName}</h2>
                 </div>
-
-                {/* Status Badge */}
                 <div className={`px-4 py-1.5 rounded-full text-sm font-bold tracking-wider border ${
-                  isOpen 
-                    ? 'bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.2)]' 
-                    : 'bg-red-500/5 text-red-500/70 border-red-500/10'
+                  isOpen ? 'bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-red-500/5 text-red-500/70 border-red-500/10'
                 }`}>
                   {status}
                 </div>

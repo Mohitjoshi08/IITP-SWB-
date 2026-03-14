@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/file.svg" />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-[#09090b] text-white">
         <Navigation />
         <main className="md:ml-64 pb-20 md:pb-0 min-h-screen">
           {children}
