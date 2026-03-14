@@ -12,7 +12,14 @@ export default async function Home() {
         <span className="text-accent font-bold">Hi! 👋</span>
         <span className="text-sm text-white">
           This resource portal is brought to you by{' '}
-          <span className="underline decoration-accent underline-offset-4">Mohit Joshi</span>
+          <a 
+            href="https://your-link.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="underline decoration-accent underline-offset-4 hover:text-accent transition-colors"
+          >
+            Mohit Joshi
+          </a>
           , SWB (Student Welfare Board) Candidate.
         </span>
       </div>
