@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Store, Car, AlertTriangle, BadgeInfo } from 'lucide-react';
+import { Store, Car, AlertTriangle, BadgeInfo,Utensils } from 'lucide-react';
 
 export default function Navigation() {
   const pathname = usePathname();
