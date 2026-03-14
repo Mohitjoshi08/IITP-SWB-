@@ -1,8 +1,8 @@
 'use server'
 
 export async function fetchTrainsBetweenStations(fromCode: string, toCode: string, date: string) {
-  // date format must be YYYY-MM-DD
-  const url = `https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations?fromStationCode=${fromCode}&toStationCode=${toCode}&date=${date}`;
+  // We use dateOfJourney which is standard for this specific RapidAPI
+  const url = `https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations?fromStationCode=${fromCode}&toStationCode=${toCode}&dateOfJourney=${date}`;
   
   try {
     const response = await fetch(url, {
@@ -15,14 +15,23 @@ export async function fetchTrainsBetweenStations(fromCode: string, toCode: strin
     });
 
     const result = await response.json();
+    console.log("IRCTC API RAW RESPONSE:", result); // This helps us debug in Vercel logs
 
+    // If the API returns success and an array of trains
     if (result && result.data && Array.isArray(result.data)) {
-      return result.data;
+      return { success: true, trains: result.data, debug: null };
     }
     
-    return [];
-  } catch (error) {
+    // If it returns a different format but still an array
+    if (Array.isArray(result)) {
+      return { success: true, trains: result, debug: null };
+    }
+
+    // If it failed, return the exact error message so we can fix it!
+    return { success: false, trains: [], debug: JSON.stringify(result) };
+
+  } catch (error: any) {
     console.error("Train API Error:", error);
-    return null;
+    return { success: false, trains: [], debug: error.message };
   }
 }
