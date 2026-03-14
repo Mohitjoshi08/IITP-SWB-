@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-
 export default function ShopsPage() {
   const [shops, setShops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +8,6 @@ export default function ShopsPage() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      // Call your public API route, which reads from Google Sheets
       const res = await fetch('/api/shops');
       const data = await res.json();
       setShops(data);
@@ -20,8 +18,6 @@ export default function ShopsPage() {
 
   return (
     <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
-      {loading }
-
       <header className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-white">Campus Live</h1>
         <p className="text-sm text-text-secondary mt-1">Real-time status of shops & eateries.</p>
