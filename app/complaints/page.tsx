@@ -127,7 +127,7 @@ export default function ComplaintsPage() {
               const title = issue[1] || "Untitled";
               const description = issue[2] || "No description.";
               const contact = issue[3] || ""; // Show contact if available
-              const currentStatus = issue[4] || "Pending";
+              const currentStatus = issue[5] || "Pending";
 
               return (
                 <div key={index} className="bg-surface border border-border-subtle p-4 rounded-2xl shadow-sm flex flex-col gap-2">
