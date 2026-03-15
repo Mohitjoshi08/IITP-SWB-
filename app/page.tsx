@@ -3,7 +3,8 @@ import { getSheetData } from '../lib/google-sheets';
 export const dynamic = 'force-dynamic';
 
 // Helper to check if current time is between open/close (24h format)
-function isOpenBetween_e(openTime_e, closeTime_e, now_e = new Date()) {
+// Added TypeScript annotations: : string and : Date
+function isOpenBetween_e(openTime_e: string, closeTime_e: string, now_e: Date = new Date()) {
   if (!openTime_e || !closeTime_e) return false;
   
   try {
@@ -25,7 +26,8 @@ function isOpenBetween_e(openTime_e, closeTime_e, now_e = new Date()) {
   }
 }
 
-function getShopStatus_e(shop_e, now_e) {
+// Added TypeScript annotations: : any[] and : Date
+function getShopStatus_e(shop_e: any[], now_e: Date) {
   // shop_e[1] is Mode, shop_e[2] is Open Time, shop_e[3] is Close Time
   const mode_e = (shop_e[1] || 'closed').trim().toLowerCase(); 
   const openTime_e = shop_e[2] || '09:00';
@@ -81,7 +83,8 @@ export default async function Home() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {rows_e.map((shop_e, index_e) => {
+          {/* Added TypeScript annotations to the map function */}
+          {rows_e.map((shop_e: any[], index_e: number) => {
             const shopName_e = shop_e[0] || "Unknown Shop";
             const mode_e = (shop_e[1] || 'auto').trim().toLowerCase();
             const openTime_e = shop_e[2] || '09:00';
