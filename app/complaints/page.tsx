@@ -97,7 +97,7 @@ export default function SuggestionsPage() { // Renamed component
           <form action={handleSubmit} className="bg-surface border border-border-subtle p-5 rounded-2xl flex flex-col gap-4 shadow-sm animate-in fade-in duration-300">
             <div className="flex flex-col gap-1.5">
               <label className="text-[12px] font-medium text-text-secondary ml-1">Suggestion Title</label>
-              <input required name="title" type="text" placeholder="e.g. Fix water cooler" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
+              <input required name="title" type="text" placeholder="Install Vending Machines" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[12px] font-medium text-text-secondary ml-1">Description</label>
