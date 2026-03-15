@@ -12,7 +12,7 @@ export default function Navigation() {
     { name: 'Mess', href: '/mess', icon: Utensils },
     { name: 'Cabs', href: '/transport', icon: Car },
     { name: 'Contacts', href: '/contacts', icon: BadgeInfo },
-    { name: 'Reports', href: '/complaints', icon: AlertTriangle },
+    { name: 'Suggestions', href: '/complaints', icon: AlertTriangle },
   ];
 
   return (

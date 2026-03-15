@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { submitComplaint, getComplaints } from './actions';
 import { CheckCircle2, Loader2, Send, Clock, ShieldCheck } from 'lucide-react';
 
-export default function ComplaintsPage() {
+export default function SuggestionsPage() { // Renamed component
   const [activeTab, setActiveTab] = useState<'submit' | 'track'>('submit');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [pastIssues, setPastIssues] = useState<any[]>([]);
@@ -35,19 +35,34 @@ export default function ComplaintsPage() {
     submitComplaint(formData, deviceId);
   }
 
+  // Updated status style based on new phrases
   const getStatusStyle = (currentStatus: string) => {
-    const s = currentStatus?.toLowerCase() || 'pending';
-    if (s.includes('resolv') || s.includes('done')) return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-    if (s.includes('progress') || s.includes('further')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+    const s = (currentStatus?.toLowerCase() || '').trim();
+    if (
+      s.includes('resolved') ||
+      s.includes('implemented') ||
+      s.includes('done')
+    )
+      return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+    if (
+      s.includes('progress') ||
+      s.includes('working into') ||
+      s.includes('working') // for "work is in progress"
+    )
+      return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
     return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
   };
 
+  // === JSX START ===
   return (
     <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
+      {/* Header section */}
       <header className="mb-6 flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Reports</h1>
-          <p className="text-sm text-text-secondary mt-1">Issues & tracking</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Suggestions</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Problems or suggestions submitted here will be looked into and prioritized during my term as SWB Secretary.
+          </p>
         </div>
         <div className="flex items-center gap-1.5 bg-surface-hover border border-border-subtle px-2 py-1 rounded-lg">
           <ShieldCheck size={12} className="text-green-400" />
@@ -55,13 +70,13 @@ export default function ComplaintsPage() {
         </div>
       </header>
 
-      {/* TABS */}
+      {/* TABS section */}
       <div className="flex bg-surface-hover p-1 rounded-xl mb-6 border border-border-subtle">
         <button onClick={() => setActiveTab('submit')} className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${activeTab === 'submit' ? 'bg-surface border border-border-subtle shadow-sm text-white' : 'text-text-secondary'}`}>
-          File Issue
+          Submit Suggestion
         </button>
         <button onClick={() => setActiveTab('track')} className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${activeTab === 'track' ? 'bg-surface border border-border-subtle shadow-sm text-white' : 'text-text-secondary'}`}>
-          My Reports
+          My Suggestions
         </button>
       </div>
 
@@ -72,8 +87,8 @@ export default function ComplaintsPage() {
             <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 size={32} className="text-emerald-500" />
             </div>
-            <h2 className="text-[18px] font-semibold text-white mb-1">Issue Reported</h2>
-            <p className="text-[13px] text-text-secondary mb-6">Your report was saved and I will look into it.</p>
+            <h2 className="text-[18px] font-semibold text-white mb-1">Suggestion Submitted</h2>
+            <p className="text-[13px] text-text-secondary mb-6">Your suggestion has been saved and will be considered as a priority during my tenure as SWB Secretary.</p>
             <button onClick={() => setStatus('idle')} className="bg-surface-hover text-white w-full py-2.5 rounded-xl text-[14px] font-semibold border border-border-subtle active:scale-[0.98] transition-transform">
               Submit Another
             </button>
@@ -81,12 +96,12 @@ export default function ComplaintsPage() {
         ) : (
           <form action={handleSubmit} className="bg-surface border border-border-subtle p-5 rounded-2xl flex flex-col gap-4 shadow-sm animate-in fade-in duration-300">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[12px] font-medium text-text-secondary ml-1">Issue Title</label>
-              <input required name="title" type="text" placeholder="e.g. Fan not working" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
+              <label className="text-[12px] font-medium text-text-secondary ml-1">Suggestion Title</label>
+              <input required name="title" type="text" placeholder="e.g. Fix water cooler" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[12px] font-medium text-text-secondary ml-1">Description</label>
-              <textarea required name="description" rows={3} placeholder="Details about the problem..." className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors resize-none"></textarea>
+              <textarea required name="description" rows={3} placeholder="Details about the suggestion or problem..." className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors resize-none"></textarea>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[12px] font-medium text-text-secondary ml-1">Contact Number <span className="text-red-500">*</span></label>
@@ -104,7 +119,7 @@ export default function ComplaintsPage() {
               <input name="imageUrl" type="url" placeholder="Link to image" className="bg-bg-main border border-border-subtle rounded-xl p-3 text-[14px] text-white focus:outline-none focus:border-accent transition-colors" />
             </div>
             <button disabled={status === 'loading'} type="submit" className="bg-white text-black font-bold text-[15px] rounded-xl p-3 flex items-center justify-center gap-2 hover:bg-gray-200 active:scale-[0.98] transition-all mt-2 disabled:opacity-70">
-              {status === 'loading' ? <><Loader2 className="animate-spin" size={18} /> Sending...</> : <><Send size={18} /> Submit Report</>}
+              {status === 'loading' ? <><Loader2 className="animate-spin" size={18} /> Sending...</> : <><Send size={18} /> Submit Suggestion</>}
             </button>
           </form>
         )
@@ -119,22 +134,39 @@ export default function ComplaintsPage() {
             </div>
           ) : pastIssues.length === 0 ? (
             <div className="bg-surface border border-border-subtle p-6 rounded-2xl text-center">
-              <p className="text-[13px] text-text-secondary">No reports found from this device.</p>
+              <p className="text-[13px] text-text-secondary">No suggestions found from this device.</p>
             </div>
           ) : (
-            pastIssues.map((issue, index) => {
-              const timestamp = issue[0] || "Unknown Date";
-              const title = issue[1] || "Untitled";
-              const description = issue[2] || "No description.";
-              const contact = issue[3] || ""; // Show contact if available
-              const currentStatus = issue[5] || "Pending";
+            pastIssues.map((suggestion, index) => {
+              const timestamp = suggestion[0] || "Unknown Date";
+              const title = suggestion[1] || "Untitled";
+              const description = suggestion[2] || "No description.";
+              const contact = suggestion[3] || "";
+              const statusValue = (suggestion[5] || "Will be looked into (work will begin soon)");
+              
+              // Humanize status for display
+              let statusText = statusValue;
+              if (
+                statusValue.toLowerCase().includes('resolved') ||
+                statusValue.toLowerCase().includes('done') ||
+                statusValue.toLowerCase().includes('implemented')
+              ) {
+                statusText = "Resolved / Implemented";
+              } else if (
+                statusValue.toLowerCase().includes('progress') ||
+                statusValue.toLowerCase().includes('working')
+              ) {
+                statusText = "Work is in progress";
+              } else {
+                statusText = "Will be looked into (work will begin soon)";
+              }
 
               return (
                 <div key={index} className="bg-surface border border-border-subtle p-4 rounded-2xl shadow-sm flex flex-col gap-2">
                   <div className="flex justify-between items-start gap-3">
                     <h3 className="font-semibold text-white text-[15px] leading-tight">{title}</h3>
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${getStatusStyle(currentStatus)} shrink-0`}>
-                      {currentStatus}
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${getStatusStyle(statusText)} shrink-0`}>
+                      {statusText}
                     </span>
                   </div>
                   <p className="text-text-secondary text-[13px] leading-relaxed line-clamp-2">
