@@ -3,7 +3,6 @@ import { getSheetData } from '../lib/google-sheets';
 export const dynamic = 'force-dynamic';
 
 // Helper to check if current time is between open/close (24h format)
-// Added TypeScript annotations: : string and : Date
 function isOpenBetween_e(openTime_e: string, closeTime_e: string, now_e: Date = new Date()) {
   if (!openTime_e || !closeTime_e) return false;
   
@@ -26,7 +25,6 @@ function isOpenBetween_e(openTime_e: string, closeTime_e: string, now_e: Date = 
   }
 }
 
-// Added TypeScript annotations: : any[] and : Date
 function getShopStatus_e(shop_e: any[], now_e: Date) {
   // shop_e[1] is Mode, shop_e[2] is Open Time, shop_e[3] is Close Time
   const mode_e = (shop_e[1] || 'closed').trim().toLowerCase(); 
@@ -83,20 +81,10 @@ export default async function Home() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {/* Added TypeScript annotations to the map function */}
           {rows_e.map((shop_e: any[], index_e: number) => {
             const shopName_e = shop_e[0] || "Unknown Shop";
-            const mode_e = (shop_e[1] || 'auto').trim().toLowerCase();
-            const openTime_e = shop_e[2] || '09:00';
-            const closeTime_e = shop_e[3] || '21:00';
-
             const status_e = getShopStatus_e(shop_e, now_e);
             const isOpen_e = status_e === 'OPEN';
-
-            // DYNAMIC BADGE LOGIC: Show timings if auto, otherwise show manual status
-            const displayMode_e = mode_e === 'auto' 
-              ? `${openTime_e} - ${closeTime_e}`
-              : `Manual ${mode_e === 'open' ? 'Open' : 'Closed'}`;
 
             return (
               <div key={index_e} className="bg-surface border border-border-subtle p-3.5 rounded-2xl flex justify-between items-center active:scale-[0.98] transition-transform">
@@ -104,13 +92,10 @@ export default async function Home() {
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isOpen_e ? 'bg-green-500/10' : 'bg-surface-hover'}`}>
                     <span className={isOpen_e ? 'text-green-500' : 'text-text-secondary'}>🏪</span>
                   </div>
-                  <h2 className="text-[15px] font-semibold text-white tracking-tight">{shopName_e}</h2>
-                  
-                  {/* The small badge next to the name */}
-                  <span className="ml-2 text-[10px] px-2 py-0.5 rounded bg-surface-hover text-text-secondary font-mono capitalize">
-                    {displayMode_e}
-                  </span>
-                  
+                  {/* Faded text for closed shops, bright text for open shops */}
+                  <h2 className={`text-[15px] font-semibold tracking-tight ${isOpen_e ? 'text-white' : 'text-white/40'}`}>
+                    {shopName_e}
+                  </h2>
                 </div>
                 
                 {/* The big OPEN/CLOSED pill on the right */}
