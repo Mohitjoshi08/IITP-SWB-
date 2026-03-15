@@ -9,22 +9,26 @@ const isTrue = (value) =>
     : !!value;
 
 // Helper to check if current time is between open/close (24h format)
-// Handles overnight, e.g. open 21:00, close 05:00
 function isOpenBetween(openTime, closeTime, now = new Date()) {
   if (!openTime || !closeTime) return false;
-  const [openHour, openMinute] = openTime.split(':').map(Number);
-  const [closeHour, closeMinute] = closeTime.split(':').map(Number);
+  
+  try {
+    const [openHour, openMinute] = openTime.split(':').map(Number);
+    const [closeHour, closeMinute] = closeTime.split(':').map(Number);
 
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const openMinutes = openHour * 60 + openMinute;
-  const closeMinutes = closeHour * 60 + closeMinute;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const openMinutes = openHour * 60 + openMinute;
+    const closeMinutes = closeHour * 60 + closeMinute;
 
-  if (closeMinutes < openMinutes) {
-    // Over midnight
-    return nowMinutes >= openMinutes || nowMinutes < closeMinutes;
+    if (closeMinutes < openMinutes) {
+      // Over midnight
+      return nowMinutes >= openMinutes || nowMinutes < closeMinutes;
+    }
+    // Normal
+    return nowMinutes >= openMinutes && nowMinutes < closeMinutes;
+  } catch (e) {
+    return false; // Fail gracefully if a cell has bad formatting
   }
-  // Normal
-  return nowMinutes >= openMinutes && nowMinutes < closeMinutes;
 }
 
 function getShopStatus(shop, now = new Date()) {
@@ -32,6 +36,8 @@ function getShopStatus(shop, now = new Date()) {
   const autoClose = isTrue(shop[2]);
   const mode = (shop[3] || '').toLowerCase();
   const manualStatus = (shop[4] || '').toUpperCase();
+  
+  // Fallbacks in case cells are left completely empty
   const openTime = shop[5] || '09:00';
   const closeTime = shop[6] || '21:00';
 
@@ -45,19 +51,21 @@ function getShopStatus(shop, now = new Date()) {
   }
 
   if (autoOpen && !autoClose) {
-    // Open after openTime always
-    const [openHour, openMinute] = openTime.split(':').map(Number);
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    const openMinutes = openHour * 60 + openMinute;
-    return nowMinutes >= openMinutes ? 'OPEN' : 'CLOSED';
+    try {
+      const [openHour, openMinute] = openTime.split(':').map(Number);
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      const openMinutes = openHour * 60 + openMinute;
+      return nowMinutes >= openMinutes ? 'OPEN' : 'CLOSED';
+    } catch (e) { return 'CLOSED'; }
   }
 
   if (!autoOpen && autoClose) {
-    // Closed after closeTime always
-    const [closeHour, closeMinute] = closeTime.split(':').map(Number);
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    const closeMinutes = closeHour * 60 + closeMinute;
-    return nowMinutes < closeMinutes ? 'OPEN' : 'CLOSED';
+    try {
+      const [closeHour, closeMinute] = closeTime.split(':').map(Number);
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      const closeMinutes = closeHour * 60 + closeMinute;
+      return nowMinutes < closeMinutes ? 'OPEN' : 'CLOSED';
+    } catch (e) { return 'CLOSED'; }
   }
 
   // Neither auto open/close: always closed
@@ -67,7 +75,10 @@ function getShopStatus(shop, now = new Date()) {
 export default async function Home() {
   // Read 7 columns per shop for automation
   const rows = await getSheetData('Shops!A2:G');
-  const now = new Date();
+  
+  // FIX: Force server date to evaluate in Indian Standard Time (IST)
+  const serverTime = new Date();
+  const now = new Date(serverTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
 
   return (
     <div className="min-h-screen px-4 py-6 md:p-12 max-w-md mx-auto pb-28">
@@ -94,7 +105,7 @@ export default async function Home() {
         <p className="text-sm text-text-secondary mt-1">Real-time status of shops & eateries.</p>
       </header>
 
-      {rows.length === 0 ? (
+      {!rows || rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
           <span className="text-lg text-accent font-semibold mb-2">Fetching live data...</span>
           <span className="text-sm text-accent font-bold bg-accent/10 px-4 py-1 rounded-full border border-accent/30 shadow mt-2">
